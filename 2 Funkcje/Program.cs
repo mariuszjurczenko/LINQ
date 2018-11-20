@@ -8,6 +8,20 @@ namespace _2_Funkcje
     {
         static void Main(string[] args)
         {
+            Func<int, int> potegowanie = x => x * x;
+
+            Func<int, int, int> dodawanie = (int a, int b) =>
+            {
+                var temp = a + b;
+                return temp;
+            };
+
+            Action<int> wypisz = x => Console.WriteLine(x);
+
+            wypisz(potegowanie(dodawanie(2,1)));
+
+
+
             IEnumerable<Pracownik> programisci = new Pracownik[]
             {
                 new Pracownik { Id = 1, Imie = "Marcin", Nazwisko = "Nowak"},
@@ -23,7 +37,8 @@ namespace _2_Funkcje
                 new Pracownik { Id = 7, Imie = "Marek", Nazwisko = "Piatek"}
             };
 
-            foreach (var osoba in programisci.Where(p => p.Imie.StartsWith("M")))
+            foreach (var osoba in programisci.Where(p => p.Imie.Length == 5)
+                                            .OrderByDescending(p => p.Imie))
             {
                 Console.WriteLine(osoba.Imie);
             }
