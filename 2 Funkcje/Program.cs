@@ -22,7 +22,7 @@ namespace _2_Funkcje
 
 
 
-            IEnumerable<Pracownik> programisci = new Pracownik[]
+            var programisci = new Pracownik[]
             {
                 new Pracownik { Id = 1, Imie = "Marcin", Nazwisko = "Nowak"},
                 new Pracownik { Id = 2, Imie = "Tomek", Nazwisko = "Kowal"},
@@ -30,15 +30,17 @@ namespace _2_Funkcje
                 new Pracownik { Id = 4, Imie = "Adam", Nazwisko = "Wrona"}
             };
 
-            IEnumerable<Pracownik> kierowcy = new List<Pracownik>()
+            var kierowcy = new List<Pracownik>()
             {
                 new Pracownik { Id = 5, Imie = "Olek", Nazwisko = "Sroka"},
                 new Pracownik { Id = 6, Imie = "Pawel", Nazwisko = "Wrobel"},
                 new Pracownik { Id = 7, Imie = "Marek", Nazwisko = "Piatek"}
             };
 
-            foreach (var osoba in programisci.Where(p => p.Imie.Length == 5)
-                                            .OrderByDescending(p => p.Imie))
+            var zapytanie = programisci.Where(p => p.Imie.Length == 5)
+                                       .OrderByDescending(p => p.Imie);
+
+            foreach (var osoba in zapytanie)
             {
                 Console.WriteLine(osoba.Imie);
             }

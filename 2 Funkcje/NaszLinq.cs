@@ -6,7 +6,7 @@ namespace _2_Funkcje.Linq
     {
         public static int Count<T>(this IEnumerable<T> kolekcja)
         {
-            int licznik = 0;
+            var licznik = 0;
             foreach (var item in kolekcja)
             {
                 licznik++;
