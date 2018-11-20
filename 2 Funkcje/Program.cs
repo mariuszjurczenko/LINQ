@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace _2_Funkcje
 {
@@ -25,15 +23,15 @@ namespace _2_Funkcje
                 new Pracownik { Id = 7, Imie = "Marek", Nazwisko = "Piatek"}
             };
 
-            Console.WriteLine(programisci.Count());
-            Console.WriteLine(kierowcy.Count());
+            foreach (var osoba in programisci.Where(p => p.Imie.StartsWith("M")))
+            {
+                Console.WriteLine(osoba.Imie);
+            }
+        }
 
-            //IEnumerator<Pracownik> enumerator = kierowcy.GetEnumerator();
-
-            //while (enumerator.MoveNext())
-            //{
-            //    Console.WriteLine(enumerator.Current.Imie);
-            //}
+        private static bool RozpoczynaNaM(Pracownik pracownik)
+        {
+            return pracownik.Imie.StartsWith("M");
         }
     }
 }
