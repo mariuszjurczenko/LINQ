@@ -8,6 +8,13 @@ namespace _3_Zapytania
     {
         static void Main(string[] args)
         {
+            var liczby = NaszLinq.LiczbyLosowe().Where(l => l > 0.5).Take(10);
+
+            foreach (var liczba in liczby)
+            {
+                Console.WriteLine(liczba);
+            }
+
             var filmy = new List<Film>
             {
                 new Film { Tytul = "Siedem", Gatunek="Thriller", Ocena = 8.3f, Rok = 1995},
@@ -20,8 +27,10 @@ namespace _3_Zapytania
                 new Film { Tytul = "Gladiator", Gatunek="Dramat", Ocena = 8.1f, Rok = 2000}
             };
 
-            var zapytanie = filmy.Where(f => f.Rok > 2002)
-                                 .OrderByDescending(f => f.Ocena);
+            var zapytanie = from film in filmy
+                            where film.Rok > 2002
+                            orderby film.Ocena descending
+                            select film;
 
 
             var enumerator = zapytanie.GetEnumerator();
