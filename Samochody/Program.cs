@@ -21,15 +21,18 @@ namespace Samochody
                                 samochod.SpalanieAutostrada
                             };
 
-            var zapytanie2 = samochody.Where(s => s.Producent == "Audi" && s.Rok == 2018)
-                             .OrderByDescending(s => s.SpalanieAutostrada)
-                             .ThenBy(s => s.Producent)
-                             .Select(s => new { s.Producent, s.Model, s.SpalanieAutostrada });      
+            var zapytanie2 = samochody.SelectMany(s => s.Producent).OrderBy(s => s);
 
-            foreach (var samochod in zapytanie.Take(10))
+
+            foreach (var litera in zapytanie2)
             {
-                Console.WriteLine(samochod.Producent + " " + samochod.Model + " : " + samochod.SpalanieAutostrada);
+                    Console.WriteLine(litera);          
             }
+
+            //foreach (var samochod in zapytanie.Take(10))
+            //{
+            //    Console.WriteLine(samochod.Producent + " " + samochod.Model + " : " + samochod.SpalanieAutostrada);
+            //}
         }
 
         private static List<Samochod> WczytywaniePliku(string sciezka) 
