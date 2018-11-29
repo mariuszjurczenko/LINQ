@@ -9,7 +9,8 @@ namespace Samochody
     {
         static void Main(string[] args)
         {
-            var samochody = WczytywaniePliku("paliwo.csv");
+            var samochody = WczytywanieSamochodu("paliwo.csv");
+            var producenci = WczytywanieProducenci("producent.csv");
 
             var zapytanie = from samochod in samochody
                             where samochod.Producent == "Audi" && samochod.Rok == 2018
@@ -21,27 +22,38 @@ namespace Samochody
                                 samochod.SpalanieAutostrada
                             };
 
-            var zapytanie2 = samochody.SelectMany(s => s.Producent).OrderBy(s => s);
-
-
-            foreach (var litera in zapytanie2)
+            foreach (var samochod in zapytanie.Take(10))
             {
-                    Console.WriteLine(litera);          
+                Console.WriteLine(samochod.Producent + " " + samochod.Model + " : " + samochod.SpalanieAutostrada);
             }
-
-            //foreach (var samochod in zapytanie.Take(10))
-            //{
-            //    Console.WriteLine(samochod.Producent + " " + samochod.Model + " : " + samochod.SpalanieAutostrada);
-            //}
         }
 
-        private static List<Samochod> WczytywaniePliku(string sciezka) 
+        private static List<Samochod> WczytywanieSamochodu(string sciezka) 
         {
             var zapytanie = File.ReadAllLines(sciezka)
                                 .Skip(1)
                                 .Where(l => l.Length > 1)
                                 .WSamochod();
                 
+            return zapytanie.ToList();
+        }
+
+
+        private static List<Producent> WczytywanieProducenci(string sciezka)
+        {
+            var zapytanie = File.ReadAllLines(sciezka)
+                                .Where(l => l.Length > 1)
+                                .Select(l =>
+                                {
+                                    var kolumny = l.Split(',');
+                                    return new Producent
+                                    {
+                                        Nazwa = kolumny[0],
+                                        Siedziba = kolumny[1],
+                                        Rok = int.Parse(kolumny[2])
+                                    };
+                                });
+
             return zapytanie.ToList();
         }
     }
