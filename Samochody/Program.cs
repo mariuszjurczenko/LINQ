@@ -11,43 +11,58 @@ namespace Samochody
         {
             var samochody = WczytywaniePliku("paliwo.csv");
 
-            var zapytanie = samochody
-                                     .OrderByDescending(s => s.SpalanieAutostrada)
-                                     .ThenBy(s => s.Producent)
-                                     .Select(s => s)
-                                     .FirstOrDefault(s => s.Producent == "ccc" && s.Rok == 2018);
+            var zapytanie = from samochod in samochody
+                            where samochod.Producent == "Audi" && samochod.Rok == 2018
+                            orderby samochod.SpalanieAutostrada descending, samochod.Producent ascending
+                            select new
+                            {
+                                samochod.Producent,
+                                samochod.Model,
+                                samochod.SpalanieAutostrada
+                            };
 
-            var zapytanie2 = samochody.Any(s => s.Producent == "BMW");
+            var zapytanie2 = samochody.Where(s => s.Producent == "Audi" && s.Rok == 2018)
+                             .OrderByDescending(s => s.SpalanieAutostrada)
+                             .ThenBy(s => s.Producent)
+                             .Select(s => new { s.Producent, s.Model, s.SpalanieAutostrada });      
 
-            Console.WriteLine(zapytanie2);
-
-            //if (zapytanie != null)
-            //{
-            //    Console.WriteLine(zapytanie.Producent + " " + zapytanie.Model);
-            //}
-          
-
-            //foreach (var samochod in zapytanie2.Take(10))
-            //{
-            //    Console.WriteLine(samochod.Producent + " " +samochod.Model + " : " + samochod.SpalanieAutostrada);
-            //}
+            foreach (var samochod in zapytanie.Take(10))
+            {
+                Console.WriteLine(samochod.Producent + " " + samochod.Model + " : " + samochod.SpalanieAutostrada);
+            }
         }
 
-        private static List<Samochod> WczytywaniePliku2(string sciezka) 
+        private static List<Samochod> WczytywaniePliku(string sciezka) 
         {
-            var zapytanie = (from linia in File.ReadAllLines(sciezka).Skip(1)
-                            where linia.Length > 1
-                            select Samochod.ParsujCSV(linia));
-
+            var zapytanie = File.ReadAllLines(sciezka)
+                                .Skip(1)
+                                .Where(l => l.Length > 1)
+                                .WSamochod();
+                
             return zapytanie.ToList();
         }
+    }
 
-        private static List<Samochod> WczytywaniePliku(string sciezka)
+    public static class SamochodRozszerzenie
+    {
+        public static IEnumerable<Samochod> WSamochod(this IEnumerable<string> zrodlo)
         {
-            return File.ReadAllLines(sciezka)
-                       .Skip(1)
-                       .Where(linia => linia.Length > 1)
-                       .Select(Samochod.ParsujCSV).ToList();
+            foreach (var linia in zrodlo)
+            {
+                var kolumny = linia.Split(','); 
+
+                yield return new Samochod
+                {
+                    Rok = int.Parse(kolumny[0]),
+                    Producent = kolumny[1],
+                    Model = kolumny[2],
+                    Pojemnosc = double.Parse(kolumny[3]),
+                    IloscCylindrow = int.Parse(kolumny[4]),
+                    SpalanieMiasto = int.Parse(kolumny[5]),
+                    SpalanieAutostrada = int.Parse(kolumny[6]),
+                    SpalanieMieszane = int.Parse(kolumny[7])
+                };
+            }
         }
     }
 }
