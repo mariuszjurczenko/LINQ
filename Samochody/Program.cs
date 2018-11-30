@@ -23,9 +23,20 @@ namespace Samochody
                                 samochod.SpalanieAutostrada
                             };
 
-            foreach (var samochod in zapytanie.Take(10))
+            var zapytanie2 = samochody.Join(producenci,
+                                            s => s.Producent,
+                                            p => p.Nazwa,
+                                            (s, p) => new
+                                            {
+                                                Samochod = s,
+                                                Producent = p
+                                            })
+                                        .OrderByDescending(s => s.Samochod.SpalanieAutostrada)
+                                        .ThenBy(s => s.Samochod.Producent);
+
+            foreach (var samochod in zapytanie2.Take(10))
             {
-                Console.WriteLine(samochod.Siedziba + " " + samochod.Producent + " " + samochod.Model + " : " + samochod.SpalanieAutostrada);
+                Console.WriteLine(samochod.Producent.Siedziba + " " + samochod.Samochod.Producent + " " + samochod.Samochod.Model + " : " + samochod.Samochod.SpalanieAutostrada);
             }
         }
 
