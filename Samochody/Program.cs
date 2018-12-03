@@ -13,33 +13,25 @@ namespace Samochody
             var producenci = WczytywanieProducenci("producent.csv");
 
             var zapytanie = from samochod in samochody
-                            join producent in producenci 
-                                on new { samochod.Producent, samochod.Rok }  
-                                equals new { Producent = producent.Nazwa, producent.Rok }
-                            orderby samochod.SpalanieAutostrada descending, samochod.Producent ascending
-                            select new
-                            {
-                                producent.Siedziba,
-                                samochod.Producent,
-                                samochod.Model,
-                                samochod.SpalanieAutostrada
-                            };
+                            group samochod by samochod.Producent.ToUpper() into producent
+                            orderby producent.Key
+                            select producent;
 
-            var zapytanie2 = samochody.Join(producenci,
-                                            s => new { s.Producent, s.Rok },
-                                            p => new { Producent = p.Nazwa, p.Rok },
-                                            (s, p) => new
-                                            {
-                                                Samochod = s,
-                                                Producent = p
-                                            })
-                                        .OrderByDescending(s => s.Samochod.SpalanieAutostrada)
-                                        .ThenBy(s => s.Samochod.Producent);
+            var zapytanie2 = samochody.GroupBy(s => s.Producent.ToUpper())
+                                      .OrderBy(g => g.Key);
+                            
 
-            foreach (var samochod in zapytanie2.Take(10))
+            foreach (var grupa in zapytanie2)
             {
-                Console.WriteLine(samochod.Producent.Siedziba + " " + samochod.Samochod.Producent + " " + samochod.Samochod.Model + " : " + samochod.Samochod.SpalanieAutostrada);
+                Console.WriteLine(grupa.Key);
+
+                foreach (var samochod in grupa.OrderByDescending(s => s.SpalanieAutostrada).Take(2)) 
+                {
+                    Console.WriteLine($"\t {samochod.Model} : {samochod.SpalanieAutostrada}");
+                }
             }
+
+
         }
 
         private static List<Samochod> WczytywanieSamochodu(string sciezka) 
