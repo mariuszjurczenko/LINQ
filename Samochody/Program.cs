@@ -12,20 +12,31 @@ namespace Samochody
             var samochody = WczytywanieSamochodu("paliwo.csv");
             var producenci = WczytywanieProducenci("producent.csv");
 
-            var zapytanie = from samochod in samochody
-                            group samochod by samochod.Producent.ToUpper() into producent
-                            orderby producent.Key
-                            select producent;
+            var zapytanie = from producent in producenci
+                            join samochod in samochody
+                            on producent.Nazwa equals samochod.Producent into samochodGrupa
+                            orderby producent.Nazwa
+                            select new
+                            {
+                                Producent = producent,
+                                Samochody = samochodGrupa
+                            };
 
-            var zapytanie2 = samochody.GroupBy(s => s.Producent.ToUpper())
-                                      .OrderBy(g => g.Key);
+
+            var zapytanie2 = producenci.GroupJoin(samochody, p => p.Nazwa, s => s.Producent,
+                                                    (p, g) =>
+                                                            new
+                                                            {
+                                                                Producent = p,
+                                                                Samochody = g
+                                                            }).OrderBy(p => p.Producent.Nazwa);
                             
 
             foreach (var grupa in zapytanie2)
             {
-                Console.WriteLine(grupa.Key);
+                Console.WriteLine($"{grupa.Producent.Nazwa} : {grupa.Producent.Siedziba}");
 
-                foreach (var samochod in grupa.OrderByDescending(s => s.SpalanieAutostrada).Take(2)) 
+                foreach (var samochod in grupa.Samochody.OrderByDescending(s => s.SpalanieAutostrada).Take(2)) 
                 {
                     Console.WriteLine($"\t {samochod.Model} : {samochod.SpalanieAutostrada}");
                 }
