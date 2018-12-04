@@ -15,12 +15,13 @@ namespace Samochody
             var zapytanie = from producent in producenci
                             join samochod in samochody
                             on producent.Nazwa equals samochod.Producent into samochodGrupa
-                            orderby producent.Nazwa
+                            orderby producent.Siedziba
                             select new
                             {
                                 Producent = producent,
                                 Samochody = samochodGrupa
-                            };
+                            } into wynik
+                            group wynik by wynik.Producent.Siedziba;
 
 
             var zapytanie2 = producenci.GroupJoin(samochody, p => p.Nazwa, s => s.Producent,
@@ -29,14 +30,17 @@ namespace Samochody
                                                             {
                                                                 Producent = p,
                                                                 Samochody = g
-                                                            }).OrderBy(p => p.Producent.Nazwa);
+                                                            }).OrderBy(p => p.Producent.Siedziba)
+                                                            .GroupBy(s => s.Producent.Siedziba);
                             
 
             foreach (var grupa in zapytanie2)
             {
-                Console.WriteLine($"{grupa.Producent.Nazwa} : {grupa.Producent.Siedziba}");
+                Console.WriteLine($"{grupa.Key} ");
 
-                foreach (var samochod in grupa.Samochody.OrderByDescending(s => s.SpalanieAutostrada).Take(2)) 
+                foreach (var samochod in grupa.SelectMany(g => g.Samochody)
+                                              .OrderByDescending(s => s.SpalanieAutostrada)
+                                              .Take(3)) 
                 {
                     Console.WriteLine($"\t {samochod.Model} : {samochod.SpalanieAutostrada}");
                 }
