@@ -10,40 +10,34 @@ namespace Samochody
     {
         static void Main(string[] args)
         {
+            TworzenieXML();
+        }
+
+        private static void TworzenieXML()
+        {
             var rekordy = WczytywanieSamochodu("paliwo.csv");
 
             var dokument = new XDocument();
-            var samochody = new XElement("Samochody");
-
-            foreach (var rekord in rekordy)
-            {
-                var samochod = new XElement("Samochod");
-
-                var producent = new XElement("Producent", rekord.Producent);
-                var model = new XElement("Model", rekord.Model);
-                var spalanieAutostrada = new XElement("SpalanieAutostrada", rekord.SpalanieAutostrada);
-                var spalanieMiasto = new XElement("SpalanieMiasto", rekord.SpalanieMiasto);
-
-                samochod.Add(producent);
-                samochod.Add(model);
-                samochod.Add(spalanieAutostrada);
-                samochod.Add(spalanieMiasto);
-
-                samochody.Add(samochod);
-            }
+            var samochody = new XElement("Samochody", from rekord in rekordy
+                                                      select new XElement("Samochod",
+                                                                           new XAttribute("Rok", rekord.Rok),
+                                                                           new XAttribute("Producent", rekord.Producent),
+                                                                           new XAttribute("Model", rekord.Model),
+                                                                           new XAttribute("SpalanieAutostrada", rekord.SpalanieAutostrada),
+                                                                           new XAttribute("SpalanieMiasto", rekord.SpalanieMiasto),
+                                                                           new XAttribute("SpalanieMieszane", rekord.SpalanieMieszane)));
 
             dokument.Add(samochody);
             dokument.Save("paliwo.xml");
-
         }
 
-        private static List<Samochod> WczytywanieSamochodu(string sciezka) 
+        private static List<Samochod> WczytywanieSamochodu(string sciezka)
         {
             var zapytanie = File.ReadAllLines(sciezka)
                                 .Skip(1)
                                 .Where(l => l.Length > 1)
                                 .WSamochod();
-                
+
             return zapytanie.ToList();
         }
 
@@ -73,7 +67,7 @@ namespace Samochody
         {
             foreach (var linia in zrodlo)
             {
-                var kolumny = linia.Split(','); 
+                var kolumny = linia.Split(',');
 
                 yield return new Samochod
                 {
