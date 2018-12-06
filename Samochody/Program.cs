@@ -11,6 +11,25 @@ namespace Samochody
         static void Main(string[] args)
         {
             TworzenieXML();
+            ZapytanieXML();
+        }
+
+        private static void ZapytanieXML()
+        {
+            var dokument = XDocument.Load("paliwo.xml");
+            var zapytanie = from element in dokument.Element("Samochody").Elements("Samochod")
+                            where element.Attribute("Producent")?.Value == "Ferrari"
+                            select new
+                            {
+                                model = element.Attribute("Model").Value,
+                                producent = element.Attribute("Producent").Value
+                            }; 
+
+            foreach (var samochod in zapytanie)
+            {
+                Console.WriteLine(samochod.producent + " " + samochod.model);
+            }
+
         }
 
         private static void TworzenieXML()
