@@ -16,8 +16,11 @@ namespace Samochody
 
         private static void ZapytanieXML()
         {
+            XNamespace ns = "http://dev-hobby.pl/Samochody/2018";
+            XNamespace ex = "http://dev-hobby.pl/Samochody/2018/ex";
+
             var dokument = XDocument.Load("paliwo.xml");
-            var zapytanie = from element in dokument.Element("Samochody").Elements("Samochod")
+            var zapytanie = from element in dokument.Element(ns + "Samochody")?.Elements(ex + "Samochod") ?? Enumerable.Empty<XElement>()
                             where element.Attribute("Producent")?.Value == "Ferrari"
                             select new
                             {
@@ -34,17 +37,22 @@ namespace Samochody
 
         private static void TworzenieXML()
         {
+            XNamespace ns = "http://dev-hobby.pl/Samochody/2018";
+            XNamespace ex = "http://dev-hobby.pl/Samochody/2018/ex";
+
             var rekordy = WczytywanieSamochodu("paliwo.csv");
 
             var dokument = new XDocument();
-            var samochody = new XElement("Samochody", from rekord in rekordy
-                                                      select new XElement("Samochod",
+            var samochody = new XElement(ns + "Samochody", from rekord in rekordy
+                                                      select new XElement(ex + "Samochod",
                                                                            new XAttribute("Rok", rekord.Rok),
                                                                            new XAttribute("Producent", rekord.Producent),
                                                                            new XAttribute("Model", rekord.Model),
                                                                            new XAttribute("SpalanieAutostrada", rekord.SpalanieAutostrada),
                                                                            new XAttribute("SpalanieMiasto", rekord.SpalanieMiasto),
                                                                            new XAttribute("SpalanieMieszane", rekord.SpalanieMieszane)));
+
+            samochody.Add(new XAttribute(XNamespace.Xmlns + "ex", ex));
 
             dokument.Add(samochody);
             dokument.Save("paliwo.xml");
