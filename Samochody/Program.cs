@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -10,8 +11,29 @@ namespace Samochody
     {
         static void Main(string[] args)
         {
-            TworzenieXML();
-            ZapytanieXML();
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SamochodDB>());
+            WstawDane();
+            ZapytanieDane();
+        }
+
+        private static void WstawDane()
+        {
+            var samochody = WczytywanieSamochodu("paliwo.csv");
+            var db = new SamochodDB();
+
+            if (!db.Samochody.Any())
+            {
+                foreach (var samochod in samochody)
+                {
+                    db.Samochody.Add(samochod);
+                }
+                db.SaveChanges();
+            }
+        }
+
+        private static void ZapytanieDane()
+        {
+            
         }
 
         private static void ZapytanieXML()
