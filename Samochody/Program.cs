@@ -38,30 +38,31 @@ namespace Samochody
             db.Database.Log = Console.WriteLine;
 
             var zapytanie = from samochod in db.Samochody
-                            orderby samochod.SpalanieAutostrada descending, samochod.Model ascending
-                            select samochod;
+                            group samochod by samochod.Producent into producent
+                            select new
+                            {
+                                Model = producent.Key,
+                                Samochody = (from samochod in producent
+                                            orderby samochod.SpalanieAutostrada descending
+                                            select samochod).Take(2)
+                            };
 
-            var zapytanie2 = db.Samochody.Where(s => s.Producent == "Audi")
-                                         .OrderByDescending(s => s.SpalanieAutostrada)
-                                         .ThenBy(s => s.Model)
-                                         .Take(10)
-                                         .ToList()
-                                         .Select(s => new
+            var zapytanie2 = db.Samochody.GroupBy(s => s.Producent)
+                                         .Select(g => new
                                          {
-                                             Model = s.Model.Split(' ')
+                                             Model = g.Key,
+                                             Samochody = g.OrderByDescending(s => s.SpalanieAutostrada).Take(2)
                                          });
-                                         
-            foreach (var item in zapytanie2)
+
+            foreach (var grupa in zapytanie)
             {
-                Console.WriteLine(item.Model[0]);
-            }
+                Console.WriteLine(grupa.Model);
 
-            //Console.WriteLine(zapytanie2.Count());                         
-
-            //foreach (var samochod in zapytanie2)
-            //{
-            //    Console.WriteLine($"{samochod.Model} : {samochod.SpalanieAutostrada}");
-            //}
+                foreach (var samochod in grupa.Samochody)
+                {
+                    Console.WriteLine($"\t{samochod.Model} : {samochod.SpalanieAutostrada}");
+                }
+            }          
         }
 
         private static void ZapytanieXML()
