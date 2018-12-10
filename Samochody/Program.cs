@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Xml.Linq;
 
 namespace Samochody
@@ -11,9 +12,19 @@ namespace Samochody
     {
         static void Main(string[] args)
         {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SamochodDB>());
-            WstawDane();
-            ZapytanieDane();
+            Func<int, int> potegowanie = x => x * x;
+            Expression<Func<int, int, int>> dodawanie = (x, y) => x + y;
+
+            Func<int, int, int> dodawanieC = dodawanie.Compile();
+            
+            var wynik = dodawanieC(5, 10);
+            Console.WriteLine(wynik);
+            Console.WriteLine(dodawanie);
+
+
+            //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SamochodDB>());
+            //WstawDane();
+            //ZapytanieDane();
         }
 
         private static void WstawDane()
