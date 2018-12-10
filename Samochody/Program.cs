@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Xml.Linq;
 
 namespace Samochody
@@ -12,19 +11,9 @@ namespace Samochody
     {
         static void Main(string[] args)
         {
-            Func<int, int> potegowanie = x => x * x;
-            Expression<Func<int, int, int>> dodawanie = (x, y) => x + y;
-
-            Func<int, int, int> dodawanieC = dodawanie.Compile();
-            
-            var wynik = dodawanieC(5, 10);
-            Console.WriteLine(wynik);
-            Console.WriteLine(dodawanie);
-
-
-            //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SamochodDB>());
-            //WstawDane();
-            //ZapytanieDane();
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<SamochodDB>());
+            WstawDane();
+            ZapytanieDane();
         }
 
         private static void WstawDane()
@@ -53,13 +42,26 @@ namespace Samochody
                             select samochod;
 
             var zapytanie2 = db.Samochody.Where(s => s.Producent == "Audi")
-                                    .OrderByDescending(s => s.SpalanieAutostrada).ThenBy(s => s.Model).Take(10);
-
-            foreach (var samochod in zapytanie2)
+                                         .OrderByDescending(s => s.SpalanieAutostrada)
+                                         .ThenBy(s => s.Model)
+                                         .Take(10)
+                                         .ToList()
+                                         .Select(s => new
+                                         {
+                                             Model = s.Model.Split(' ')
+                                         });
+                                         
+            foreach (var item in zapytanie2)
             {
-                Console.WriteLine($"{samochod.Model} : {samochod.SpalanieAutostrada}");
+                Console.WriteLine(item.Model[0]);
             }
 
+            //Console.WriteLine(zapytanie2.Count());                         
+
+            //foreach (var samochod in zapytanie2)
+            //{
+            //    Console.WriteLine($"{samochod.Model} : {samochod.SpalanieAutostrada}");
+            //}
         }
 
         private static void ZapytanieXML()
@@ -115,7 +117,6 @@ namespace Samochody
 
             return zapytanie.ToList();
         }
-
 
         private static List<Producent> WczytywanieProducenci(string sciezka)
         {
